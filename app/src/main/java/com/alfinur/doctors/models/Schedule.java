@@ -1,9 +1,7 @@
 package com.alfinur.doctors.models;
 
-/**
- * Created by sidorovroman on 28.04.15.
- */
-public class Shedule {
+
+public class Schedule {
     private String pfio;
     private String address;
     private int arid;
@@ -13,7 +11,7 @@ public class Shedule {
     private String time;
     private String phone;
 
-    public Shedule(String pfio, String address, int arid, int tid, String complaints, String data, String time, String phone) {
+    public Schedule(String pfio, String address, int arid, int tid, String complaints, String data, String time, String phone) {
         this.pfio = pfio;
         this.address = address;
         this.arid = arid;

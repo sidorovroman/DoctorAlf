@@ -3,9 +3,19 @@
     android:layout_height="match_parent" tools:context=".Main">
 
     <ListView
-        android:id="@+id/shedule"
+        android:id="@+id/schedule"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
     </ListView>
-
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Нет записей"
+        android:id="@+id/noNotes"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:textSize="30sp"
+        android:textStyle="bold|italic"
+        android:textColor="#999"
+        android:visibility="gone" />
 </RelativeLayout>

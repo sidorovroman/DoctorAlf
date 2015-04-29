@@ -11,10 +11,11 @@ import retrofit.RestAdapter;
 import retrofit.client.OkClient;
 
 public class Api {
-    private static Service service;
+    private static final String DIRTY_SERVER = "http://alf.ngrok.io/doctor.php";
+    private static DoctorService doctorService;
 
-    public static Service getService(final Context context) {
-        if (service == null) {
+    public static DoctorService getService(final Context context) {
+        if (doctorService == null) {
             RequestInterceptor requestInterceptor = new RequestInterceptor() {
                 @Override
                 public void intercept(RequestFacade request) {
@@ -25,17 +26,17 @@ public class Api {
             RestAdapter restAdapter = new RestAdapter.Builder()
                     .setClient(new OkClient(new OkHttpClient()))
                     .setLogLevel(RestAdapter.LogLevel.NONE)
-                    .setEndpoint("dsigning")
+                    .setEndpoint(DIRTY_SERVER)
                     .setRequestInterceptor(requestInterceptor)
                     .setErrorHandler(new CustomErrorHandler())
                     .build();
 
-            service = restAdapter.create(Service.class);
+            doctorService = restAdapter.create(DoctorService.class);
         }
-        return service;
+        return doctorService;
     }
 
     public static void deleteService() {
-        service = null;
+        doctorService = null;
     }
 }

@@ -1,9 +1,7 @@
 package com.alfinur.doctors.activities;
 
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -13,11 +11,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.alfinur.doctors.AlertShedule;
 import com.alfinur.doctors.R;
 import com.alfinur.doctors.adapters.SheduleAdapter;
-import com.alfinur.doctors.models.Shedule;
+import com.alfinur.doctors.exceptions.NoConnectionException;
+import com.alfinur.doctors.models.Schedule;
+import com.alfinur.doctors.network.Api;
+
+import org.apache.http.NoHttpResponseException;
 
 import java.util.ArrayList;
 
@@ -25,6 +29,7 @@ import java.util.ArrayList;
 public class SheduleActivity extends ActionBarActivity {
 
     private ListView mSheduleListView;
+    private TextView noNotes;
     private ProgressDialog pd;
     private long docId;
 
@@ -40,13 +45,14 @@ public class SheduleActivity extends ActionBarActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle(docFio);
 
-        mSheduleListView = (ListView) findViewById(R.id.shedule);
-        getSheduleAndShow();
+        mSheduleListView = (ListView) findViewById(R.id.schedule);
+        noNotes = (TextView) findViewById(R.id.noNotes);
+        getScheduleAndShow();
 
     }
-    private void getSheduleAndShow() {
+    private void getScheduleAndShow() {
         final Context context = this;
-        new AsyncTask<Void, Void, ArrayList<Shedule>>() {
+        new AsyncTask<Void, Void, ArrayList<Schedule>>() {
             @Override
             protected void onPreExecute(){
                 pd = new ProgressDialog(context);
@@ -54,23 +60,35 @@ public class SheduleActivity extends ActionBarActivity {
                 pd.show();
             }
             @Override
-            protected ArrayList<Shedule> doInBackground(Void... params) {
-                ArrayList<Shedule> shedules = getShedule();
-                return shedules;
+            protected ArrayList<Schedule> doInBackground(Void... params) {
+                ArrayList<Schedule> schedules = null;
+                try {
+                    schedules = Api.getService(context).getSchedule(docId);
+                } catch (NoConnectionException | NoHttpResponseException e) {
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return schedules;
             }
             @Override
-            protected void onPostExecute(ArrayList<Shedule> shedules) {
+            protected void onPostExecute(ArrayList<Schedule> schedules) {
 
-                SheduleAdapter sheduleAdapter = new SheduleAdapter(context,shedules);
+                if(schedules!=null) {
+                    SheduleAdapter sheduleAdapter = new SheduleAdapter(context, schedules);
 
-                mSheduleListView.setAdapter(sheduleAdapter);
-                mSheduleListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        Shedule shedule = (Shedule) view.getTag();
-                        new AlertShedule(context).showSheduleAlert(shedule);
-                    }
-                });
+                    mSheduleListView.setAdapter(sheduleAdapter);
+                    mSheduleListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                            Schedule schedule = (Schedule) view.getTag();
+                            new AlertShedule(context).showSheduleAlert(schedule);
+                        }
+                    });
+                }else{
+                    noNotes.setVisibility(View.VISIBLE);
+                }
+
                 if (pd.isShowing()){
                     pd.dismiss();
                 }
@@ -78,19 +96,6 @@ public class SheduleActivity extends ActionBarActivity {
         }.execute();
 
     }
-
-    private ArrayList<Shedule> getShedule() {
-
-        ArrayList<Shedule> shedules = new ArrayList<>();
-
-        shedules.add(new Shedule("Фамилия пациента","Казань ул.Гвардейская 21",1, 0, null ,"24.12.15","14:00 - 15:00","123-12-1"));
-        shedules.add(new Shedule("Фамилия пациента_2","Казань ул.Гвардейская 21",1, 1, "","24.12.15","14:00 - 15:00","123-12-1"));
-        shedules.add(new Shedule("Фамилия пациента_3","Казань ул.Гвардейская 21",1, 0, "жалобы","24.12.15","14:00 - 15:00","123-12-1"));
-        shedules.add(new Shedule("Фамилия пациента_4","Казань ул.Гвардейская 21",1, 1, null,"24.12.15","14:00 - 15:00","123-12-1"));
-
-        return shedules;
-    }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

@@ -7,15 +7,22 @@ import android.os.AsyncTask;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.alfinur.doctors.R;
 import com.alfinur.doctors.adapters.DocAdapter;
+import com.alfinur.doctors.exceptions.NoConnectionException;
+import com.alfinur.doctors.exceptions.ResourcesNotFoundedException;
 import com.alfinur.doctors.models.Doctor;
+import com.alfinur.doctors.network.Api;
+import com.alfinur.doctors.network.DoctorService;
+
+import org.apache.http.NoHttpResponseException;
 
 import java.util.ArrayList;
 
@@ -24,12 +31,15 @@ public class DoctorsActivity extends ActionBarActivity {
 
     private ListView mDocsListView;
     private ProgressDialog pd;
+    private TextView noDocs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mDocsListView = (ListView) findViewById(R.id.docs);
+        noDocs = (TextView) findViewById(R.id.noDocs);
+
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayShowCustomEnabled(true);
         actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
@@ -54,44 +64,42 @@ public class DoctorsActivity extends ActionBarActivity {
             }
             @Override
             protected ArrayList<Doctor> doInBackground(Void... params) {
-                ArrayList<Doctor> doctors = getDoctors();
+                ArrayList<Doctor> doctors = null;
+                try {
+                    doctors = Api.getService(context).getDoctors();
+                } catch (NoConnectionException | NoHttpResponseException | ResourcesNotFoundedException e) {
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 return doctors;
             }
             @Override
             protected void onPostExecute(ArrayList<Doctor> doctors) {
-                DocAdapter docAdapter = new DocAdapter(context, doctors);
+                if (doctors != null) {
 
-                mDocsListView.setAdapter(docAdapter);
-                mDocsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        Doctor doctor = (Doctor) view.getTag();
-                        Long doctorId = doctor.getDid();
-                        Intent myIntent = new Intent(DoctorsActivity.this, SheduleActivity.class);
-                        myIntent.putExtra("doctorId", doctorId); //Optional parameters
-                        myIntent.putExtra("doctorName", doctor.getFio()); //Optional parameters
-                        startActivity(myIntent);
-                    }
-                });
-                if (pd.isShowing()){
+                    DocAdapter docAdapter = new DocAdapter(context, doctors);
+
+                    mDocsListView.setAdapter(docAdapter);
+                    mDocsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                            Doctor doctor = (Doctor) view.getTag();
+                            Long doctorId = doctor.getDid();
+                            Intent myIntent = new Intent(DoctorsActivity.this, SheduleActivity.class);
+                            myIntent.putExtra("doctorId", doctorId); //Optional parameters
+                            myIntent.putExtra("doctorName", doctor.getFio()); //Optional parameters
+                            startActivity(myIntent);
+                        }
+                    });
+                } else {
+                    noDocs.setVisibility(View.VISIBLE);
+                }
+                if (pd.isShowing()) {
                     pd.dismiss();
                 }
             }
         }.execute();
 
     }
-
-    private ArrayList<Doctor> getDoctors() {
-
-        ArrayList<Doctor> doctors = new ArrayList<>();
-
-        doctors.add(new Doctor(1,"Лаврентий"));
-        doctors.add(new Doctor(2,"Онегин"));
-        doctors.add(new Doctor(3,"Другой"));
-        doctors.add(new Doctor(4,"4444"));
-        doctors.add(new Doctor(5,"55555"));
-
-        return doctors;
-    }
-
 }

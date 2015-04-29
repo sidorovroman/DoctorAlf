@@ -5,11 +5,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
 
-import com.alfinur.doctors.models.Shedule;
+import com.alfinur.doctors.models.Schedule;
 
-/**
- * Created by sidorovroman on 29.04.15.
- */
 public class AlertShedule {
     private Context context;
 
@@ -17,14 +14,14 @@ public class AlertShedule {
         this.context = context;
     }
 
-    public void showSheduleAlert(Shedule shedule) {
+    public void showSheduleAlert(Schedule schedule) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         StringBuilder stringBuilder = new StringBuilder();
 
-        if(shedule.getTid() == 1) {
+        if(schedule.getTid() == 1) {
             stringBuilder
                     .append("Прием по адресу: ")
-                    .append(shedule.getAddress())
+                    .append(schedule.getAddress())
                     .append("\n");
         }else{
             stringBuilder
@@ -32,23 +29,23 @@ public class AlertShedule {
                     .append("\n");
         }
 
-        stringBuilder.append(shedule.getFio());
+        stringBuilder.append(schedule.getFio());
 
-        if(shedule.getPhone()!=null || shedule.getPhone()!=null && !shedule.getPhone().isEmpty()) {
+        if(schedule.getPhone()!=null || schedule.getPhone()!=null && !schedule.getPhone().isEmpty()) {
             stringBuilder.append("\n")
                     .append("тел:")
-                    .append(shedule.getPhone());
+                    .append(schedule.getPhone());
         }
 
-        if(shedule.getComplaints()!=null) {
+        if(schedule.getComplaints()!=null) {
             stringBuilder.append("\n")
                     .append("жалобы:")
-                    .append(shedule.getComplaints());
+                    .append(schedule.getComplaints());
         }
 
         String message = stringBuilder.toString();
-        Drawable icon = (shedule.getTid() == 1 ) ? context.getResources().getDrawable(R.drawable.home) : context.getResources().getDrawable(R.drawable.clinic);
-        builder.setTitle(shedule.getTime().concat("   ").concat(shedule.getData()))
+        Drawable icon = (schedule.getTid() == 1 ) ? context.getResources().getDrawable(R.drawable.home) : context.getResources().getDrawable(R.drawable.clinic);
+        builder.setTitle(schedule.getTime().concat("   ").concat(schedule.getData()))
                 .setMessage(message)
                 .setIcon(icon)
                 .setCancelable(false)
