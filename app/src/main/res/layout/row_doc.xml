@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/row_note_states"
+    android:paddingBottom="15dp"
+    android:paddingLeft="14dp"
+    android:paddingRight="20dp"
+    android:paddingTop="15dp">
+
+    <TextView
+        android:id="@+id/fio"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="0.97"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:text="ФИО"
+        android:textColor="#3F3F3F"
+        android:paddingLeft="20dp"
+        android:textSize="24sp" />
+
+
+</RelativeLayout>
