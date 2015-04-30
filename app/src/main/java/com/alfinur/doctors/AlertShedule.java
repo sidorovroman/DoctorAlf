@@ -18,7 +18,7 @@ public class AlertShedule {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         StringBuilder stringBuilder = new StringBuilder();
 
-        if(schedule.getTid() == 1) {
+        if(schedule.getTid() == 2) {
             stringBuilder
                     .append("Прием по адресу: ")
                     .append(schedule.getAddress())
@@ -44,7 +44,7 @@ public class AlertShedule {
         }
 
         String message = stringBuilder.toString();
-        Drawable icon = (schedule.getTid() == 1 ) ? context.getResources().getDrawable(R.drawable.home) : context.getResources().getDrawable(R.drawable.clinic);
+        Drawable icon = (schedule.getTid() == 2 ) ? context.getResources().getDrawable(R.drawable.home) : context.getResources().getDrawable(R.drawable.clinic);
         builder.setTitle(schedule.getTime().concat("   ").concat(schedule.getData()))
                 .setMessage(message)
                 .setIcon(icon)

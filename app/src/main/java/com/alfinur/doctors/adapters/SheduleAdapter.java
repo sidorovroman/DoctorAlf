@@ -65,7 +65,7 @@ public class SheduleAdapter extends BaseAdapter {
         time.setText(schedule.getTime());
         view.setTag(schedule); //bind model to the view
 
-        if(schedule.getTid()!=0){
+        if(schedule.getTid()!=1){
             ImageView type = (ImageView) view.findViewById(R.id.type);
             type.setImageDrawable(ctx.getResources().getDrawable(R.drawable.home));
         }
